@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AguaCima · Transporte de agua potable a zonas mineras de alta montaña</title>
+<meta name="description" content="Transporte de agua potable a operaciones mineras de alta montaña en Mendoza y San Juan. Flota propia, cobertura en cordillera, respuesta inmediata.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Sora:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.1.0/dist/tabler-icons.min.css">
+<style>
+:root{
+  --bg:#eef3f6;
+  --bg-deep:#f7fafc;
+  --bg-mid:#e4ecf1;
+  --panel:#ffffff;
+  --green:#0e7490;
+  --green-bright:#0891b2;
+  /* derived accent tokens — recompute automatically when --green / --green-bright change */
+  --primary-hover:color-mix(in srgb, var(--green) 82%, #fff);
+  --green-shadow:color-mix(in srgb, var(--green) 60%, transparent);
+  --accent-soft:color-mix(in srgb, var(--green-bright) 16%, transparent);
+  --accent-line:color-mix(in srgb, var(--green-bright) 45%, transparent);
+  --accent-ring:color-mix(in srgb, var(--green) 24%, transparent);
+  --accent-pulse:color-mix(in srgb, var(--green-bright) 55%, transparent);
+  --scene-ink:38,58,72;
+  --overlay-nav:rgba(255,255,255,0.82);
+  --overlay-menu:rgba(255,255,255,0.96);
+  --stats-bg:rgba(255,255,255,0.92);
+  --line:rgba(22,36,46,0.13);
+  --line-soft:rgba(22,36,46,0.07);
+  --fg:#16242e;
+  --fg-60:rgba(22,36,46,0.64);
+  --fg-45:rgba(22,36,46,0.5);
+  --fg-30:rgba(22,36,46,0.36);
+  --fg-15:rgba(22,36,46,0.16);
+  --font-sans:'Manrope',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;
+  --font-mono:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,monospace;
+  --maxw:1280px;
+  --pad:clamp(1.25rem,4vw,3.5rem);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:var(--font-sans);
+  background:var(--bg);
+  color:var(--fg);
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+::selection{background:var(--green);color:#fff;}
+a{color:inherit;}
+img{display:block;max-width:100%;}
+
+/* ---------- placeholder imagery ---------- */
+.ph{
+  position:relative;
+  background-color:var(--panel);
+  background-image:repeating-linear-gradient(135deg,rgba(255,255,255,0.035) 0 2px,transparent 2px 11px);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+  overflow:hidden;
+}
+.ph::after{content:'';position:absolute;inset:0;background:linear-gradient(160deg,rgba(13,31,53,0.5),rgba(11,20,32,0.85));pointer-events:none;}
+.ph i{position:relative;z-index:1;font-size:46px;color:rgba(255,255,255,0.13);}
+.ph span{position:relative;z-index:1;font-family:var(--font-mono);font-size:10px;letter-spacing:2px;color:rgba(255,255,255,0.22);text-transform:uppercase;}
+
+/* ---------- illustrated scenes (placeholder art, theme-aware) ---------- */
+.scene{position:absolute;inset:0;overflow:hidden;background:linear-gradient(180deg,var(--bg-mid),var(--bg-deep));}
+.scene svg{position:absolute;inset:0;width:100%;height:100%;display:block;}
+/* real photography */
+.scene-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;}
+.scene-shade{position:absolute;inset:0;z-index:2;pointer-events:none;}
+.hero-right .scene-shade{background:linear-gradient(180deg,rgba(8,18,28,0.10),rgba(8,18,28,0.28) 70%,rgba(8,18,28,0.60));}
+.flota-cell .scene-shade{background:linear-gradient(180deg,rgba(8,18,28,0) 55%,rgba(8,18,28,0.22));}
+.scene-note{
+  position:absolute;right:10px;bottom:10px;z-index:4;
+  font-family:var(--font-mono);font-size:9px;letter-spacing:1px;text-transform:uppercase;
+  color:rgba(255,255,255,0.4);background:rgba(0,0,0,0.35);backdrop-filter:blur(3px);
+  border:0.5px solid rgba(255,255,255,0.12);border-radius:4px;padding:4px 8px;
+  display:flex;align-items:center;gap:5px;
+}
+.scene-note i{font-size:12px;}
+.hero-right .scene-note{top:10px;bottom:auto;}
+.flota-cell .scene{position:relative;aspect-ratio:4/3;}
+/* optional accent glow behind hero */
+body[data-glow="on"] .scene::after{content:'';position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:radial-gradient(120% 80% at 78% 18%,color-mix(in srgb,var(--green-bright) 22%,transparent),transparent 60%);}
+/* sharp corners variant */
+body[data-corners="rectas"] .nav-cta,
+body[data-corners="rectas"] .btn-primary,
+body[data-corners="rectas"] .btn-secondary,
+body[data-corners="rectas"] .form-submit,
+body[data-corners="rectas"] .field input,
+body[data-corners="rectas"] .field textarea,
+body[data-corners="rectas"] .field select,
+body[data-corners="rectas"] .contact-form,
+body[data-corners="rectas"] .hero-badge,
+body[data-corners="rectas"] .scene-note,
+body[data-corners="rectas"] .nav-logo .mark,
+body[data-corners="rectas"] .footer-logo .mark,
+body[data-corners="rectas"] .mm-cta{border-radius:0 !important;}
+
+/* visuals: illustration vs real photo (image-slot) */
+.slot-wrap{position:absolute;inset:0;display:none;}
+.slot-wrap image-slot{width:100%;height:100%;display:block;}
+.flota-cell .slot-wrap{position:relative;aspect-ratio:4/3;inset:auto;}
+body[data-visuals="foto"] .scene{display:none;}
+body[data-visuals="foto"] .slot-wrap{display:block;}
+
+/* ---------- nav ---------- */
+.nav{
+  position:sticky;top:0;z-index:50;
+  background:var(--overlay-nav);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-bottom:0.5px solid var(--line);
+  transition:border-color .3s;
+}
+/* scroll progress — water-textured bar pinned under the header */
+.scroll-progress{position:absolute;left:0;right:0;bottom:-1px;height:4px;z-index:51;background:var(--line-soft);overflow:hidden;pointer-events:none;}
+.scroll-progress-bar{
+  height:100%;width:0;position:relative;overflow:hidden;border-radius:0 3px 3px 0;
+  background:linear-gradient(90deg,var(--green),var(--green-bright) 45%,var(--green) 90%);
+  background-size:220% 100%;animation:waterflow 3.2s linear infinite;
+  box-shadow:0 0 10px var(--accent-pulse),0 0 3px var(--green-bright);
+  transition:width .12s linear;
+}
+.scroll-progress-bar::after{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(118deg,rgba(255,255,255,0) 0 7px,rgba(255,255,255,0.24) 7px 11px,rgba(255,255,255,0) 11px 18px);
+  background-size:44px 100%;animation:watertex 1.5s linear infinite;mix-blend-mode:screen;
+}
+@keyframes waterflow{0%{background-position:0 0;}100%{background-position:220% 0;}}
+@keyframes watertex{from{background-position:0 0;}to{background-position:44px 0;}}
+.nav-inner{
+  max-width:var(--maxw);margin:0 auto;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1rem var(--pad);
+}
+.nav-logo{display:flex;align-items:center;gap:9px;font-size:18px;font-weight:600;letter-spacing:-0.4px;}
+.nav-logo .mark{width:22px;height:22px;border-radius:5px;background:var(--green);display:grid;place-items:center;font-size:13px;color:#fff;}
+.nav-logo b{font-weight:600;}
+.nav-logo i{font-style:normal;color:var(--green-bright);font-weight:500;}
+.nav-links{display:flex;gap:2rem;align-items:center;}
+.nav-links a{font-size:13px;color:var(--fg-45);text-decoration:none;letter-spacing:0.2px;transition:color .2s;position:relative;}
+.nav-links a::after{content:'';position:absolute;left:0;bottom:-4px;width:0;height:1px;background:var(--green-bright);transition:width .25s;}
+.nav-links a:hover{color:var(--fg);}
+.nav-links a:hover::after{width:100%;}
+.nav-cta{
+  font-family:var(--font-sans);font-size:13px;font-weight:500;color:#fff;
+  background:var(--green);border:none;padding:0.6rem 1.2rem;border-radius:5px;cursor:pointer;
+  display:inline-flex;align-items:center;gap:7px;transition:transform .15s,background .2s,box-shadow .2s;
+}
+.nav-cta:hover{background:var(--primary-hover);box-shadow:0 6px 20px -6px var(--green-shadow);transform:translateY(-1px);}
+.nav-cta:active{transform:translateY(0);}
+.nav-burger{display:none;background:none;border:0.5px solid var(--line);border-radius:6px;width:40px;height:40px;color:var(--fg);font-size:20px;cursor:pointer;align-items:center;justify-content:center;}
+
+/* mobile menu */
+.mobile-menu{
+  position:fixed;inset:0;z-index:49;background:var(--overlay-menu);
+  backdrop-filter:blur(8px);
+  display:flex;flex-direction:column;justify-content:center;gap:0.5rem;padding:var(--pad);
+  transform:translateY(-100%);opacity:0;pointer-events:none;transition:transform .4s cubic-bezier(.4,0,.2,1),opacity .3s;
+}
+.mobile-menu.open{transform:translateY(0);opacity:1;pointer-events:auto;}
+.mobile-menu a{font-size:32px;font-weight:500;color:var(--fg);text-decoration:none;letter-spacing:-1px;padding:0.5rem 0;border-bottom:0.5px solid var(--line-soft);}
+.mobile-menu a .n{font-family:var(--font-mono);font-size:12px;color:var(--green-bright);margin-right:12px;}
+.mobile-menu .mm-cta{margin-top:1.5rem;background:var(--green);color:#fff;border:none;font-size:16px;font-weight:500;padding:1rem;border-radius:6px;display:flex;align-items:center;justify-content:center;gap:8px;font-family:var(--font-sans);cursor:pointer;}
+
+/* ---------- shell ---------- */
+.shell{max-width:var(--maxw);margin:0 auto;position:relative;}
+
+/* ---------- hero ---------- */
+.hero{
+  display:grid;grid-template-columns:1.05fr 0.95fr;align-items:stretch;
+  border-bottom:0.5px solid var(--line-soft);
+}
+.hero-left{
+  padding:clamp(2.5rem,5vw,5rem) var(--pad) clamp(2.5rem,5vw,4rem);
+  display:flex;flex-direction:column;justify-content:center;position:relative;min-height:540px;
+}
+.left-rule{
+  position:absolute;left:0;top:0;bottom:0;width:46px;
+  border-right:0.5px solid var(--line-soft);
+  display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:1.5rem 0;
+}
+.left-rule .tick{writing-mode:vertical-rl;font-family:var(--font-mono);font-size:9px;letter-spacing:3px;color:var(--fg-15);text-transform:uppercase;}
+.left-rule .axis{flex:1;width:1px;background:repeating-linear-gradient(to bottom,var(--fg-15) 0 1px,transparent 1px 8px);margin:1rem 0;}
+.hero-body{padding-left:46px;}
+.hero-tag{
+  font-family:var(--font-mono);font-size:11px;letter-spacing:2px;color:var(--fg-45);text-transform:uppercase;
+  margin-bottom:1.8rem;display:flex;align-items:center;gap:10px;
+}
+.hero-tag::before{content:'';width:26px;height:1px;background:var(--green);display:inline-block;}
+.hero-headline{
+  font-size:clamp(38px,5.4vw,64px);line-height:1.02;font-weight:600;letter-spacing:-2.5px;margin-bottom:1.6rem;
+}
+.hero-headline em{font-style:normal;color:var(--green-bright);}
+.hero-sub{font-size:clamp(14px,1.5vw,16px);color:var(--fg-45);line-height:1.65;max-width:380px;margin-bottom:2.4rem;}
+.hero-btns{display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
+.btn-primary{
+  font-family:var(--font-sans);background:var(--green);color:#fff;border:none;
+  padding:0.85rem 1.6rem;font-size:14px;font-weight:500;border-radius:5px;cursor:pointer;
+  display:inline-flex;align-items:center;gap:9px;transition:transform .15s,background .2s,box-shadow .2s;
+}
+.btn-primary:hover{background:var(--primary-hover);box-shadow:0 8px 26px -8px var(--green-shadow);transform:translateY(-1px);}
+.btn-secondary{
+  font-family:var(--font-sans);background:transparent;color:var(--fg-60);
+  border:0.5px solid var(--line);padding:0.85rem 1.6rem;font-size:14px;border-radius:5px;cursor:pointer;
+  transition:border-color .2s,color .2s;
+}
+.btn-secondary:hover{border-color:rgba(255,255,255,0.4);color:var(--fg);}
+
+.hero-right{position:relative;min-height:540px;border-left:0.5px solid var(--line-soft);}
+.hero-right .ph{position:absolute;inset:0;}
+.hero-badge{
+  position:absolute;top:1.25rem;left:1.25rem;z-index:3;
+  background:var(--accent-soft);border:0.5px solid var(--accent-line);
+  color:var(--green-bright);font-family:var(--font-mono);font-size:11px;padding:6px 11px;border-radius:4px;
+  display:flex;align-items:center;gap:7px;letter-spacing:1px;
+}
+.badge-dot{width:7px;height:7px;border-radius:50%;background:var(--green-bright);box-shadow:0 0 0 0 var(--accent-pulse);animation:pulse 2s infinite;}
+@keyframes pulse{0%{box-shadow:0 0 0 0 var(--accent-pulse);}70%{box-shadow:0 0 0 8px transparent;}100%{box-shadow:0 0 0 0 transparent;}}
+.hero-stats{
+  position:absolute;bottom:0;left:0;right:0;z-index:3;
+  background:var(--stats-bg);backdrop-filter:blur(6px);
+  display:grid;grid-template-columns:repeat(3,1fr);border-top:0.5px solid var(--line);
+}
+.stat-item{padding:1.1rem 1.3rem;border-right:0.5px solid var(--line-soft);}
+.stat-item:last-child{border-right:none;}
+.stat-num{font-size:24px;font-weight:600;letter-spacing:-0.5px;}
+.stat-num em{font-style:normal;color:var(--green-bright);}
+.stat-label{font-family:var(--font-mono);font-size:9px;color:var(--fg-30);letter-spacing:1.5px;text-transform:uppercase;margin-top:4px;}
+
+/* ---------- ticker ---------- */
+.ticker{
+  background:var(--bg-deep);padding:0.7rem 0;border-top:0.5px solid var(--line-soft);border-bottom:0.5px solid var(--line-soft);
+  overflow:hidden;white-space:nowrap;-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);
+}
+.ticker-inner{display:flex;width:max-content;animation:ticker 32s linear infinite;will-change:transform;}
+.ticker-group{display:flex;gap:3rem;padding-right:3rem;flex-shrink:0;}
+.ticker:hover .ticker-inner{animation-play-state:paused;}
+.ticker-item{font-family:var(--font-mono);font-size:11px;color:var(--fg-30);letter-spacing:2px;text-transform:uppercase;display:inline-flex;align-items:center;gap:12px;white-space:nowrap;}
+.ticker-sep{color:var(--green);}
+@keyframes ticker{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+/* ---------- sections ---------- */
+.section{padding:clamp(3rem,6vw,5.5rem) var(--pad);max-width:var(--maxw);margin:0 auto;}
+.section-mid-bg{background:var(--bg-mid);}
+.section-deep-bg{background:var(--bg-deep);}
+.section-head{margin-bottom:2.8rem;}
+.section-tag{
+  font-family:var(--font-mono);font-size:10px;letter-spacing:2.5px;color:var(--fg-30);text-transform:uppercase;
+  margin-bottom:1rem;display:flex;align-items:center;gap:9px;
+}
+.section-tag::before{content:'';width:22px;height:1px;background:var(--green);display:inline-block;}
+.section-title{font-size:clamp(28px,3.6vw,38px);font-weight:600;letter-spacing:-1.2px;line-height:1.08;margin-bottom:0.6rem;}
+.section-sub{font-size:14px;color:var(--fg-45);max-width:480px;line-height:1.6;}
+
+/* services */
+.services-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line-soft);border:0.5px solid var(--line-soft);}
+.service-card{background:var(--bg-mid);padding:2.2rem;transition:background-color .25s;position:relative;}
+.section-mid-bg .service-card{background:var(--bg);}
+.service-card::before{content:'';position:absolute;left:0;top:0;width:2px;height:0;background:var(--green);transition:height .3s;}
+.service-card:hover{background:var(--panel);}
+.service-card:hover::before{height:100%;}
+.service-num{font-family:var(--font-mono);font-size:10px;color:var(--fg-30);letter-spacing:1px;position:absolute;top:2.2rem;right:2.2rem;}
+.service-icon{font-size:26px;color:var(--green-bright);margin-bottom:1.1rem;}
+.service-title{font-size:16px;font-weight:600;margin-bottom:0.5rem;letter-spacing:-0.3px;}
+.service-desc{font-size:13px;color:var(--fg-45);line-height:1.65;}
+
+/* flota */
+.flota-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line-soft);border:0.5px solid var(--line-soft);}
+.flota-cell{background:var(--bg-mid);}
+.flota-cell .ph{aspect-ratio:4/3;}
+.flota-meta{padding:1rem 1.2rem;display:flex;align-items:center;justify-content:space-between;border-top:0.5px solid var(--line-soft);}
+.flota-name{font-size:13px;font-weight:500;}
+.flota-cap{font-family:var(--font-mono);font-size:11px;color:var(--green-bright);}
+
+/* clientes */
+.clientes-lead{display:flex;align-items:flex-end;justify-content:space-between;gap:2rem;flex-wrap:wrap;margin-bottom:2rem;}
+.trust-strip{display:flex;gap:2.2rem;flex-wrap:wrap;}
+.trust-stat{display:flex;flex-direction:column;gap:2px;}
+.trust-num{font-size:26px;font-weight:700;letter-spacing:-0.8px;color:var(--fg);line-height:1;}
+.trust-num em{font-style:normal;color:var(--green);}
+.trust-label{font-family:var(--font-mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--fg-45);}
+.clientes-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line-soft);border:0.5px solid var(--line-soft);border-radius:10px 10px 0 0;overflow:hidden;}
+.cliente-item{background:var(--panel);padding:1.5rem 1.5rem;display:flex;align-items:center;gap:14px;position:relative;transition:background-color .25s,transform .2s;}
+.cliente-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:0;background:var(--green);transition:width .25s;}
+.cliente-item:hover{background:var(--bg-mid);}
+.cliente-item:hover::before{width:3px;}
+.cliente-mark{width:46px;height:46px;border-radius:10px;flex-shrink:0;display:grid;place-items:center;
+  background:var(--accent-soft);border:0.5px solid var(--accent-line);
+  font-family:var(--font-mono);font-weight:500;font-size:14px;letter-spacing:0.5px;color:var(--green);transition:transform .2s;}
+.cliente-item:hover .cliente-mark{transform:scale(1.06);}
+.cliente-txt{display:flex;flex-direction:column;gap:3px;min-width:0;}
+.cliente-name{font-size:15px;font-weight:600;color:var(--fg);letter-spacing:-0.3px;}
+.cliente-sector{font-family:var(--font-mono);font-size:10px;color:var(--fg-45);letter-spacing:1px;text-transform:uppercase;}
+.clientes-quote{
+  margin-top:1px;background:var(--panel);border:0.5px solid var(--line-soft);border-top:none;
+  border-radius:0 0 10px 10px;padding:2rem 2.2rem;display:flex;gap:1.4rem;align-items:flex-start;
+}
+.clientes-quote .qmark{font-size:46px;line-height:0.6;color:var(--green);font-family:Georgia,serif;flex-shrink:0;opacity:0.5;}
+.clientes-quote blockquote{font-size:clamp(16px,2vw,20px);line-height:1.45;font-weight:500;color:var(--fg);letter-spacing:-0.3px;max-width:760px;}
+.clientes-quote cite{display:block;margin-top:0.9rem;font-style:normal;font-family:var(--font-mono);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--fg-45);}
+.clientes-quote cite b{color:var(--green);font-weight:500;}
+.clientes-note{font-family:var(--font-mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--fg-30);margin-top:1.2rem;display:flex;align-items:center;gap:7px;}
+.clientes-note i{font-size:13px;}
+
+/* contacto */
+.contact-section{background:var(--bg-deep);}
+.contact-grid{max-width:var(--maxw);margin:0 auto;padding:clamp(3rem,6vw,5.5rem) var(--pad);display:grid;grid-template-columns:1fr 1fr;gap:clamp(2rem,5vw,4.5rem);align-items:start;}
+.contact-left .section-title{font-size:clamp(30px,4vw,44px);}
+.contact-left p{font-size:14px;color:var(--fg-45);line-height:1.7;margin-top:1.1rem;max-width:380px;}
+.contact-meta{margin-top:2rem;display:flex;flex-direction:column;gap:0.9rem;}
+.contact-meta .row{display:flex;align-items:center;gap:12px;font-size:13px;color:var(--fg-60);}
+.contact-meta .row i{color:var(--green-bright);font-size:17px;width:20px;}
+.contact-form{display:flex;flex-direction:column;gap:0.9rem;background:var(--bg-mid);border:0.5px solid var(--line-soft);border-radius:8px;padding:1.8rem;}
+.field{display:flex;flex-direction:column;gap:6px;}
+.field label{font-family:var(--font-mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--fg-45);}
+.field input,.field textarea,.field select{
+  font-family:var(--font-sans);font-size:14px;color:var(--fg);background:var(--bg);border:0.5px solid var(--line);
+  border-radius:5px;padding:0.7rem 0.85rem;outline:none;transition:border-color .2s,box-shadow .2s;
+}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--green);box-shadow:0 0 0 3px var(--accent-ring);}
+.field textarea{resize:vertical;min-height:70px;}
+.field.invalid input,.field.invalid textarea,.field.invalid select{border-color:#e0533d;box-shadow:0 0 0 3px rgba(224,83,61,0.15);}
+.field .err{font-size:11px;color:#ef7059;display:none;}
+.field.invalid .err{display:block;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:0.9rem;}
+.form-submit{
+  font-family:var(--font-sans);background:var(--green);color:#fff;border:none;padding:0.95rem;font-size:14px;font-weight:500;
+  border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:0.3rem;
+  transition:background .2s,box-shadow .2s,transform .15s;
+}
+.form-submit:hover{background:var(--primary-hover);box-shadow:0 8px 24px -8px var(--green-shadow);transform:translateY(-1px);}
+.form-note{font-family:var(--font-mono);font-size:11px;color:var(--fg-30);padding-left:0.85rem;border-left:2px solid var(--green);line-height:1.5;}
+.form-success{display:none;flex-direction:column;align-items:center;text-align:center;gap:0.7rem;padding:2.5rem 1rem;}
+.form-success.show{display:flex;}
+.form-success .ok{width:54px;height:54px;border-radius:50%;background:var(--accent-soft);border:0.5px solid var(--accent-line);display:grid;place-items:center;color:var(--green-bright);font-size:28px;}
+.form-success h4{font-size:18px;font-weight:600;}
+.form-success p{font-size:13px;color:var(--fg-45);max-width:280px;line-height:1.6;}
+
+/* footer */
+.footer{background:var(--bg);border-top:0.5px solid var(--line-soft);}
+.footer-inner{max-width:var(--maxw);margin:0 auto;padding:1.6rem var(--pad);display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
+.footer-logo{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:var(--fg-60);}
+.footer-logo .mark{width:18px;height:18px;border-radius:4px;background:var(--green);display:grid;place-items:center;font-size:11px;color:#fff;}
+.footer-copy{font-family:var(--font-mono);font-size:11px;color:var(--fg-30);}
+.footer-links{display:flex;gap:1.4rem;}
+.footer-links a{font-size:12px;color:var(--fg-30);text-decoration:none;transition:color .2s;}
+.footer-links a:hover{color:var(--green-bright);}
+
+/* floating whatsapp */
+.wa-float{
+  position:fixed;right:18px;bottom:18px;z-index:60;
+  width:56px;height:56px;border-radius:50%;background:#25D366;color:#fff;
+  display:none;align-items:center;justify-content:center;font-size:28px;text-decoration:none;
+  box-shadow:0 10px 30px -8px rgba(37,211,102,0.6);
+  animation:wa-in .4s ease both;
+}
+.wa-float::after{content:'';position:absolute;inset:0;border-radius:50%;border:2px solid rgba(37,211,102,0.5);animation:wa-ring 2.2s infinite;}
+@keyframes wa-ring{0%{transform:scale(1);opacity:.7;}100%{transform:scale(1.6);opacity:0;}}
+@keyframes wa-in{from{transform:translateY(20px) scale(.6);opacity:0;}to{transform:none;opacity:1;}}
+
+/* reveal */
+.reveal{opacity:0;transform:translateY(18px);transition:opacity .7s cubic-bezier(.2,.6,.2,1),transform .7s cubic-bezier(.2,.6,.2,1);}
+.reveal.in{opacity:1;transform:none;}
+@media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none;}.ticker-inner{animation:none;}.badge-dot{animation:none;}.scroll-progress-bar,.scroll-progress-bar::after{animation:none;}}
+
+/* ---------- responsive ---------- */
+@media(max-width:900px){
+  .nav-links{display:none;}
+  .nav-cta{display:none;}
+  .nav-burger{display:flex;}
+  .hero{grid-template-columns:1fr;}
+  .hero-left{min-height:auto;padding-top:clamp(3rem,9vw,4.5rem);padding-bottom:clamp(2.75rem,7vw,3.75rem);}
+  .hero-tag{margin-bottom:1.6rem;}
+  .hero-headline{font-size:clamp(42px,11.5vw,58px);letter-spacing:-1.6px;margin-bottom:1.4rem;}
+  .hero-sub{font-size:16px;max-width:none;line-height:1.7;margin-bottom:2.2rem;}
+  .hero-btns{gap:14px;}
+  .hero-btns .btn-primary,.hero-btns .btn-secondary{padding:1rem 1.7rem;font-size:15px;}
+  .hero-right{min-height:clamp(380px,64vw,460px);border-left:none;border-top:0.5px solid var(--line-soft);}
+  .services-grid{grid-template-columns:1fr;}
+  .flota-grid{grid-template-columns:1fr;}
+  .clientes-grid{grid-template-columns:repeat(2,1fr);}
+  .contact-grid{grid-template-columns:1fr;}
+  .wa-float{display:flex;}
+}
+@media(max-width:520px){
+  .hero-body{padding-left:38px;}
+  .left-rule{width:38px;}
+  .hero-headline{font-size:clamp(40px,13vw,52px);}
+  .hero-btns{flex-direction:column;align-items:stretch;}
+  .hero-btns .btn-primary,.hero-btns .btn-secondary{display:flex;align-items:center;justify-content:center;width:100%;}
+  .form-row{grid-template-columns:1fr;}
+  .clientes-grid{grid-template-columns:1fr;}
+  .stat-item{padding:0.9rem 0.9rem;}
+  .stat-num{font-size:20px;}
+  .footer-inner{flex-direction:column;align-items:flex-start;gap:0.8rem;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav" id="top">
+  <div class="nav-inner">
+    <a href="#top" class="nav-logo" aria-label="AguaCima inicio">
+      <span class="mark"><i class="ti ti-droplet-filled"></i></span>
+      <b>Agua<i>Cima</i></b>
+    </a>
+    <div class="nav-links">
+      <a href="#servicios">Servicios</a>
+      <a href="#flota">Flota</a>
+      <a href="#clientes">Clientes</a>
+      <a href="#contacto">Contacto</a>
+    </div>
+    <button class="nav-cta" data-quote>
+      <i class="ti ti-brand-whatsapp"></i> Cotizar ahora
+    </button>
+    <button class="nav-burger" id="burger" aria-label="Abrir menú"><i class="ti ti-menu-2"></i></button>
+  </div>
+  <div class="scroll-progress" aria-hidden="true"><div class="scroll-progress-bar" id="scrollBar"></div></div>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#servicios"><span class="n">01</span>Servicios</a>
+  <a href="#flota"><span class="n">02</span>Flota</a>
+  <a href="#clientes"><span class="n">03</span>Clientes</a>
+  <a href="#contacto"><span class="n">04</span>Contacto</a>
+  <button class="mm-cta" data-quote><i class="ti ti-brand-whatsapp"></i> Cotizar por WhatsApp</button>
+</div>
+
+<div class="shell">
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-left">
+      <div class="left-rule" aria-hidden="true">
+        <span class="tick">32°53'S · 69°W</span>
+        <div class="axis"></div>
+        <span class="tick">Mendoza · Argentina</span>
+      </div>
+      <div class="hero-body">
+        <div class="hero-tag">§ 01 — Transporte especializado</div>
+        <h1 class="hero-headline">Llevamos el agua<br>donde otros<br><em>no llegan.</em></h1>
+        <p class="hero-sub">Transporte de agua potable a operaciones mineras de alta montaña. Flota propia, cobertura regional en cordillera y respuesta inmediata.</p>
+        <div class="hero-btns">
+          <button class="btn-primary" data-quote><i class="ti ti-brand-whatsapp"></i> Cotizar por WhatsApp</button>
+          <a class="btn-secondary" href="#servicios">Ver servicios</a>
+        </div>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="scene">
+        <img class="scene-img" src="images/hero.jpg" alt="Camión en ruta de cordillera hacia una operación minera de alta montaña" loading="eager">
+        <div class="scene-shade"></div>
+      </div>
+      <div class="hero-badge"><span class="badge-dot"></span> FLOTA OPERATIVA</div>
+      <div class="hero-stats">
+        <div class="stat-item"><div class="stat-num"><em>+</em>500</div><div class="stat-label">Viajes · Año</div></div>
+        <div class="stat-item"><div class="stat-num">15<em>+</em></div><div class="stat-label">Años experiencia</div></div>
+        <div class="stat-item"><div class="stat-num">3.800<em>m</em></div><div class="stat-label">Altitud máx.</div></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- TICKER -->
+<div class="ticker" aria-hidden="true">
+  <div class="ticker-inner" id="tickerInner"></div>
+</div>
+
+<!-- SERVICIOS -->
+<div class="section-mid-bg">
+  <section class="section" id="servicios">
+    <div class="section-head reveal">
+      <div class="section-tag">Servicios</div>
+      <h2 class="section-title">Lo que hacemos</h2>
+      <p class="section-sub">Soluciones de abastecimiento hídrico para operaciones en zonas extremas.</p>
+    </div>
+    <div class="services-grid reveal">
+      <div class="service-card"><span class="service-num">01</span><div class="service-icon"><i class="ti ti-droplet"></i></div><div class="service-title">Transporte de agua potable</div><div class="service-desc">Abastecimiento en camiones cisterna certificados, con agua apta para consumo humano e industrial.</div></div>
+      <div class="service-card"><span class="service-num">02</span><div class="service-icon"><i class="ti ti-mountain"></i></div><div class="service-title">Cobertura en alta montaña</div><div class="service-desc">Operamos en rutas de cordillera y accesos de difícil tránsito donde otros proveedores no llegan.</div></div>
+      <div class="service-card"><span class="service-num">03</span><div class="service-icon"><i class="ti ti-clock-hour-4"></i></div><div class="service-title">Entregas programadas</div><div class="service-desc">Calendario de abastecimiento adaptado a los turnos y necesidades de cada operación minera.</div></div>
+      <div class="service-card"><span class="service-num">04</span><div class="service-icon"><i class="ti ti-urgent"></i></div><div class="service-title">Servicio de emergencia</div><div class="service-desc">Respuesta rápida ante cortes o urgencias. Flota disponible para atender imprevistos operativos.</div></div>
+    </div>
+  </section>
+</div>
+
+<!-- FLOTA -->
+<section class="section" id="flota">
+  <div class="section-head reveal">
+    <div class="section-tag">Flota</div>
+    <h2 class="section-title">Nuestra flota</h2>
+    <p class="section-sub">Camiones cisterna propios con mantenimiento certificado y equipamiento para alta montaña.</p>
+  </div>
+  <div class="flota-grid reveal">
+    <div class="flota-cell"><div class="scene"><img class="scene-img" src="images/flota-1.jpg" alt="Camión cisterna de agua potable en ruta" loading="lazy"><div class="scene-shade"></div></div><div class="flota-meta"><span class="flota-name">Cisterna estándar</span><span class="flota-cap">15.000 L</span></div></div>
+    <div class="flota-cell"><div class="scene"><img class="scene-img" src="images/flota-2.jpg" alt="Camión de alta capacidad en operación minera" loading="lazy"><div class="scene-shade"></div></div><div class="flota-meta"><span class="flota-name">Alta capacidad</span><span class="flota-cap">20.000 L</span></div></div>
+    <div class="flota-cell"><div class="scene"><img class="scene-img" src="images/flota-3.jpg" alt="Camión 4×4 en camino de montaña" loading="lazy"><div class="scene-shade"></div></div><div class="flota-meta"><span class="flota-name">Camión 4×4 montaña</span><span class="flota-cap">8.000 L</span></div></div>
+  </div>
+</section>
+
+<!-- CLIENTES -->
+<div class="section-deep-bg">
+  <section class="section" id="clientes">
+    <div class="section-head reveal">
+      <div class="section-tag">Clientes</div>
+      <h2 class="section-title">Empresas que confían en nosotros</h2>
+      <p class="section-sub">Abastecemos a las principales operaciones mineras de la cordillera, campaña tras campaña.</p>
+    </div>
+    <div class="clientes-lead reveal">
+      <div class="trust-strip">
+        <div class="trust-stat"><span class="trust-num"><em>12</em>+</span><span class="trust-label">Operaciones activas</span></div>
+        <div class="trust-stat"><span class="trust-num">2</span><span class="trust-label">Provincias · Mza · SJ</span></div>
+        <div class="trust-stat"><span class="trust-num"><em>98</em>%</span><span class="trust-label">Renovación de contrato</span></div>
+      </div>
+    </div>
+    <div class="clientes-grid reveal">
+      <div class="cliente-item"><div class="cliente-mark">MS</div><div class="cliente-txt"><span class="cliente-name">Minera del Sur</span><span class="cliente-sector">Cobre · Mendoza</span></div></div>
+      <div class="cliente-item"><div class="cliente-mark">AM</div><div class="cliente-txt"><span class="cliente-name">Andina Mining</span><span class="cliente-sector">Oro · San Juan</span></div></div>
+      <div class="cliente-item"><div class="cliente-mark">CM</div><div class="cliente-txt"><span class="cliente-name">Comsur S.A.</span><span class="cliente-sector">Litio · San Juan</span></div></div>
+      <div class="cliente-item"><div class="cliente-mark">CN</div><div class="cliente-txt"><span class="cliente-name">Cerro Negro S.A.</span><span class="cliente-sector">Polimetálico · Mendoza</span></div></div>
+      <div class="cliente-item"><div class="cliente-mark">AR</div><div class="cliente-txt"><span class="cliente-name">Andes Resources</span><span class="cliente-sector">Cobre · San Juan</span></div></div>
+      <div class="cliente-item"><div class="cliente-mark">CD</div><div class="cliente-txt"><span class="cliente-name">Cordillera Op.</span><span class="cliente-sector">Servicios · Los Andes</span></div></div>
+    </div>
+    <figure class="clientes-quote reveal">
+      <span class="qmark" aria-hidden="true">&ldquo;</span>
+      <div>
+        <blockquote>En tres campañas de invierno nunca nos dejaron sin agua. Llegan donde el camino se vuelve hielo.</blockquote>
+        <cite><b>Jefatura de Logística</b> · Operación minera, San Juan</cite>
+      </div>
+    </figure>
+    <div class="clientes-note reveal"><i class="ti ti-info-circle"></i> Nombres y testimonio de referencia · se reemplazan por los reales</div>
+  </section>
+</div>
+
+<!-- CONTACTO -->
+<div class="contact-section" id="contacto">
+  <div class="contact-grid">
+    <div class="contact-left reveal">
+      <div class="section-tag">Contacto</div>
+      <h2 class="section-title">¿Necesitás agua en tu operación?</h2>
+      <p>Respondemos en menos de 2 horas en días hábiles. Cotización sin cargo, adaptada a la escala y ubicación de tu proyecto.</p>
+      <div class="contact-meta">
+        <div class="row"><i class="ti ti-brand-whatsapp"></i> +54 9 261 XXX XXXX</div>
+        <div class="row"><i class="ti ti-mail"></i> contacto@aguacima.com.ar</div>
+        <div class="row"><i class="ti ti-map-pin"></i> Mendoza · Argentina</div>
+        <div class="row"><i class="ti ti-clock-hour-9"></i> Lun a Vie · 8 – 18 hs</div>
+      </div>
+    </div>
+    <div class="contact-right reveal">
+      <form class="contact-form" id="quoteForm" novalidate>
+        <div class="form-row">
+          <div class="field"><label for="f-nombre">Nombre</label><input id="f-nombre" name="nombre" type="text" placeholder="Tu nombre" required><span class="err">Ingresá tu nombre</span></div>
+          <div class="field"><label for="f-empresa">Empresa</label><input id="f-empresa" name="empresa" type="text" placeholder="Operación / empresa"><span class="err">Campo requerido</span></div>
+        </div>
+        <div class="form-row">
+          <div class="field"><label for="f-tel">WhatsApp / Teléfono</label><input id="f-tel" name="tel" type="tel" placeholder="+54 9 ..." required><span class="err">Ingresá un teléfono de contacto</span></div>
+          <div class="field"><label for="f-zona">Zona</label><select id="f-zona" name="zona"><option value="">Seleccioná</option><option>Mendoza</option><option>San Juan</option><option>Cordillera de los Andes</option><option>Otra</option></select><span class="err">Campo requerido</span></div>
+        </div>
+        <div class="field"><label for="f-msg">Mensaje</label><textarea id="f-msg" name="mensaje" placeholder="Contanos volumen estimado, ubicación y frecuencia…"></textarea><span class="err">Campo requerido</span></div>
+        <button class="form-submit" type="submit"><i class="ti ti-send"></i> Enviar consulta</button>
+        <div class="form-note">También podés escribirnos directo por WhatsApp · respondemos en menos de 2 horas en días hábiles.</div>
+      </form>
+      <div class="form-success" id="formSuccess">
+        <div class="ok"><i class="ti ti-check"></i></div>
+        <h4>¡Consulta enviada!</h4>
+        <p>Gracias por contactarte. Te respondemos a la brevedad por WhatsApp o correo.</p>
+        <button class="btn-secondary" id="resetForm">Enviar otra consulta</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-logo"><span class="mark"><i class="ti ti-droplet-filled"></i></span> AguaCima</div>
+    <div class="footer-copy">© 2026 · Mendoza, Argentina · Transporte de agua potable</div>
+    <div class="footer-links">
+      <a href="#contacto">WhatsApp</a>
+      <a href="#contacto">Correo</a>
+      <a href="#top">Volver arriba</a>
+    </div>
+  </div>
+</footer>
+
+<!-- FLOATING WHATSAPP -->
+<a class="wa-float" href="#contacto" aria-label="Contactar por WhatsApp" data-quote><i class="ti ti-brand-whatsapp"></i></a>
+
+<script>
+(function(){
+  // ----- ticker fill (duplicated for seamless loop) -----
+  var zonas=['Mendoza','San Juan','Cordillera de los Andes','Alta montaña','Zonas mineras','Agua potable certificada'];
+  var inner=document.getElementById('tickerInner');
+  var groupHTML=zonas.map(function(z){return '<span class="ticker-item">'+z+' <span class="ticker-sep">✦</span></span>';}).join('');
+  // two identical, equal-width groups → translateX(-50%) loops seamlessly, never goes blank
+  inner.innerHTML='<div class="ticker-group">'+groupHTML+'</div><div class="ticker-group" aria-hidden="true">'+groupHTML+'</div>';
+
+  // ----- scroll progress bar -----
+  var scrollBar=document.getElementById('scrollBar');
+  function updateProgress(){
+    var doc=document.documentElement;
+    var max=(doc.scrollHeight-window.innerHeight);
+    var p=max>0?(window.scrollY||doc.scrollTop)/max*100:0;
+    scrollBar.style.width=Math.max(0,Math.min(100,p))+'%';
+  }
+  window.addEventListener('scroll',updateProgress,{passive:true});
+  window.addEventListener('resize',updateProgress);
+  updateProgress();
+
+  // ----- mobile menu -----
+  var burger=document.getElementById('burger');
+  var menu=document.getElementById('mobileMenu');
+  function closeMenu(){menu.classList.remove('open');burger.innerHTML='<i class="ti ti-menu-2"></i>';}
+  burger.addEventListener('click',function(){
+    var open=menu.classList.toggle('open');
+    burger.innerHTML=open?'<i class="ti ti-x"></i>':'<i class="ti ti-menu-2"></i>';
+  });
+  menu.querySelectorAll('a').forEach(function(a){a.addEventListener('click',closeMenu);});
+
+  // ----- quote buttons -> scroll to contact + focus -----
+  document.querySelectorAll('[data-quote]').forEach(function(btn){
+    btn.addEventListener('click',function(e){
+      if(btn.tagName==='BUTTON') e.preventDefault();
+      closeMenu();
+      var c=document.getElementById('contacto');
+      c.scrollIntoView({behavior:'smooth',block:'start'});
+      setTimeout(function(){var n=document.getElementById('f-nombre'); if(n) n.focus({preventScroll:true});},650);
+    });
+  });
+
+  // ----- form validation -----
+  var form=document.getElementById('quoteForm');
+  var success=document.getElementById('formSuccess');
+  function setInvalid(field,bad){field.classList.toggle('invalid',bad);}
+  form.addEventListener('submit',function(e){
+    e.preventDefault();
+    var required=[['f-nombre'],['f-tel']];
+    var ok=true;
+    required.forEach(function(r){
+      var input=document.getElementById(r[0]);
+      var field=input.closest('.field');
+      var bad=!input.value.trim();
+      setInvalid(field,bad);
+      if(bad) ok=false;
+    });
+    if(!ok){ var firstBad=form.querySelector('.field.invalid input'); if(firstBad) firstBad.focus(); return; }
+    form.style.display='none';
+    success.classList.add('show');
+  });
+  // clear invalid on input
+  form.querySelectorAll('input,textarea,select').forEach(function(el){
+    el.addEventListener('input',function(){var f=el.closest('.field'); if(f) f.classList.remove('invalid');});
+  });
+  document.getElementById('resetForm').addEventListener('click',function(){
+    form.reset();form.style.display='flex';success.classList.remove('show');
+  });
+
+  // ----- scroll reveal -----
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(en){ if(en.isIntersecting){en.target.classList.add('in');io.unobserve(en.target);} });
+  },{threshold:0.12});
+  document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});
+})();
+</script>
+
+<!-- TWEAKS PANEL (React) -->
+<div id="tweaks-root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel">
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "theme": "niebla",
+  "accent": "auto",
+  "font": "manrope",
+  "corners": "suaves",
+  "glow": true,
+  "visuals": "ilustracion"
+}/*EDITMODE-END*/;
+
+const THEMES = {
+  niebla:    { dark:false, bg:'#eef3f6', deep:'#f7fafc', mid:'#e4ecf1', panel:'#ffffff', primary:'#0e7490', accent:'#0891b2' },
+  alpino:    { dark:false, bg:'#eef4ef', deep:'#f7faf7', mid:'#e3ede6', panel:'#ffffff', primary:'#15803d', accent:'#0e9f5a' },
+  arena:     { dark:false, bg:'#f5f0e8', deep:'#fbf8f2', mid:'#ece2d4', panel:'#fffdf9', primary:'#b45309', accent:'#c2410c' },
+  glaciar:   { dark:true,  bg:'#081722', deep:'#04121b', mid:'#0b1e2b', panel:'#102836', primary:'#0e7490', accent:'#34d8e8' },
+  esmeralda: { dark:true,  bg:'#0B1420', deep:'#060e18', mid:'#0e1929', panel:'#111c2e', primary:'#1A7A4A', accent:'#4ade80' },
+  cobre:     { dark:true,  bg:'#16110c', deep:'#0e0a06', mid:'#1d1610', panel:'#251c13', primary:'#b45309', accent:'#f0a868' },
+  andino:    { dark:true,  bg:'#0c0d1c', deep:'#070814', mid:'#111228', panel:'#171834', primary:'#6d28d9', accent:'#a78bfa' }
+};
+const ACCENTS_LIGHT = { cian:'#0891b2', lima:'#22a45a', ambar:'#d97706', violeta:'#7c3aed', coral:'#e11d48' };
+const ACCENTS_DARK  = { cian:'#34d8e8', lima:'#7CFF9B', ambar:'#fbbf24', violeta:'#a78bfa', coral:'#fb7185' };
+const FONTS = {
+  grotesk:"'Space Grotesk',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif",
+  sora:"'Sora',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif",
+  manrope:"'Manrope',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif"
+};
+
+function applyTheme(t){
+  const root=document.documentElement, b=document.body;
+  const th=THEMES[t.theme]||THEMES.niebla;
+  const dark = th.dark !== false;
+  root.style.setProperty('--bg',th.bg);
+  root.style.setProperty('--bg-deep',th.deep);
+  root.style.setProperty('--bg-mid',th.mid);
+  root.style.setProperty('--panel',th.panel);
+  root.style.setProperty('--green',th.primary);
+  const accMap = dark ? ACCENTS_DARK : ACCENTS_LIGHT;
+  root.style.setProperty('--green-bright', t.accent==='auto' ? th.accent : (accMap[t.accent]||th.accent));
+  root.style.setProperty('--font-sans', FONTS[t.font]||FONTS.grotesk);
+  if(dark){
+    root.style.setProperty('--fg','#ffffff');
+    root.style.setProperty('--fg-60','rgba(255,255,255,0.6)');
+    root.style.setProperty('--fg-45','rgba(255,255,255,0.45)');
+    root.style.setProperty('--fg-30','rgba(255,255,255,0.3)');
+    root.style.setProperty('--fg-15','rgba(255,255,255,0.15)');
+    root.style.setProperty('--line','rgba(255,255,255,0.10)');
+    root.style.setProperty('--line-soft','rgba(255,255,255,0.06)');
+    root.style.setProperty('--scene-ink','255,255,255');
+    root.style.setProperty('--overlay-nav','rgba(8,14,22,0.82)');
+    root.style.setProperty('--overlay-menu','rgba(6,14,24,0.97)');
+    root.style.setProperty('--stats-bg','rgba(6,12,20,0.9)');
+  } else {
+    root.style.setProperty('--fg','#16242e');
+    root.style.setProperty('--fg-60','rgba(22,36,46,0.64)');
+    root.style.setProperty('--fg-45','rgba(22,36,46,0.5)');
+    root.style.setProperty('--fg-30','rgba(22,36,46,0.36)');
+    root.style.setProperty('--fg-15','rgba(22,36,46,0.16)');
+    root.style.setProperty('--line','rgba(22,36,46,0.13)');
+    root.style.setProperty('--line-soft','rgba(22,36,46,0.07)');
+    root.style.setProperty('--scene-ink','38,58,72');
+    root.style.setProperty('--overlay-nav','rgba(255,255,255,0.82)');
+    root.style.setProperty('--overlay-menu','rgba(255,255,255,0.96)');
+    root.style.setProperty('--stats-bg','rgba(255,255,255,0.92)');
+  }
+  b.dataset.corners = t.corners;
+  b.dataset.glow = t.glow ? 'on' : 'off';
+  b.dataset.visuals = t.visuals || 'ilustracion';
+}
+
+function App(){
+  const [t,setTweak]=useTweaks(TWEAK_DEFAULTS);
+  React.useEffect(()=>{ applyTheme(t); },[t]);
+  return (
+    <TweaksPanel title="Tweaks">
+      <TweakSection label="Paleta" />
+      <TweakSelect label="Tema" value={t.theme}
+        options={[
+          {value:'niebla',label:'Niebla · claro / cian'},
+          {value:'alpino',label:'Alpino · claro / verde'},
+          {value:'arena',label:'Arena · claro / cobre'},
+          {value:'glaciar',label:'Glaciar · oscuro / cian'},
+          {value:'esmeralda',label:'Esmeralda · oscuro / verde'},
+          {value:'cobre',label:'Cobre · oscuro / minería'},
+          {value:'andino',label:'Andino · oscuro / violeta'}
+        ]}
+        onChange={(v)=>setTweak('theme',v)} />
+      <TweakSelect label="Acento" value={t.accent}
+        options={[
+          {value:'auto',label:'Automático (del tema)'},
+          {value:'cian',label:'Cian'},
+          {value:'lima',label:'Lima'},
+          {value:'ambar',label:'Ámbar'},
+          {value:'violeta',label:'Violeta'},
+          {value:'coral',label:'Coral'}
+        ]}
+        onChange={(v)=>setTweak('accent',v)} />
+      <TweakSection label="Estilo" />
+      <TweakRadio label="Tipografía" value={t.font}
+        options={[{value:'grotesk',label:'Grotesk'},{value:'sora',label:'Sora'},{value:'manrope',label:'Manrope'}]}
+        onChange={(v)=>setTweak('font',v)} />
+      <TweakRadio label="Esquinas" value={t.corners}
+        options={[{value:'suaves',label:'Suaves'},{value:'rectas',label:'Rectas'}]}
+        onChange={(v)=>setTweak('corners',v)} />
+      <TweakToggle label="Glow de fondo" value={t.glow}
+        onChange={(v)=>setTweak('glow',v)} />
+    </TweaksPanel>
+  );
+}
+ReactDOM.createRoot(document.getElementById('tweaks-root')).render(<App/>);
+</script>
+
+<template id="__bundler_thumbnail" data-bg-color="#eef3f6">
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="#eef3f6"/><path d="M50 26c9 12 14 19 14 28a14 14 0 1 1-28 0c0-9 5-16 14-28z" fill="#0e7490"/></svg>
+</template>
+
+</body>
+</html>
